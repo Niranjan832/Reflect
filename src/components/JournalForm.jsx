@@ -6,9 +6,7 @@ class JournalForm extends Component {
     mood: "Neutral",
   };
 
-  handleChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
+  handleChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
   handleSubmit = (e) => {
     e.preventDefault();

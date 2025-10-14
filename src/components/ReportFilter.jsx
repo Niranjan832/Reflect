@@ -7,9 +7,7 @@ class ReportFilter extends Component {
     mood: "",
   };
 
-  handleChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
+  handleChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
   handleSubmit = (e) => {
     e.preventDefault();

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Login from "./components/Login";
 import JournalForm from "./components/JournalForm";
 import ReportFilter from "./components/ReportFilter";
 import JournalList from "./components/JournalList";
@@ -6,39 +7,55 @@ import "./styles.css";
 
 class App extends Component {
   state = {
+    page: "login", // "login" | "journal" | "report"
+    user: null,
     journals: [],
   };
 
-  // Add a new journal entry
-  addJournal = async (entry) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/journals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(entry),
-      });
-      const data = await response.json();
-      this.setState({ journals: [...this.state.journals, data] });
-    } catch (error) {
-      console.error("Error adding journal:", error);
-    }
+  // Simulated login
+  handleLogin = (username) => {
+    this.setState({ user: { name: username }, page: "journal" });
   };
 
-  // Fetch filtered journals
-  fetchReports = async (filters) => {
-    const query = new URLSearchParams(filters).toString();
-    const response = await fetch(`http://localhost:5000/api/journals?${query}`);
-    const data = await response.json();
-    this.setState({ journals: data });
+  // Add a journal entry
+  addJournal = (entry) => {
+    this.setState({ journals: [...this.state.journals, entry] });
+  };
+
+  // Go to report page
+  goToReport = () => {
+    this.setState({ page: "report" });
+  };
+
+  // Go back to journal page
+  goToJournal = () => {
+    this.setState({ page: "journal" });
   };
 
   render() {
+    const { page, user, journals } = this.state;
+
     return (
       <div className="app-container">
-        <h1>📝 Daily Journal</h1>
-        <JournalForm onSubmit={this.addJournal} />
-        <ReportFilter onFilter={this.fetchReports} />
-        <JournalList entries={this.state.journals} />
+        <h1>📝 Daily Journal App</h1>
+
+        {page === "login" && <Login onLogin={this.handleLogin} />}
+
+        {page === "journal" && (
+          <>
+            <p>Welcome, {user.name}!</p>
+            <JournalForm onSubmit={this.addJournal} />
+            <button onClick={this.goToReport} className="nav-btn">Go to Reports</button>
+          </>
+        )}
+
+        {page === "report" && (
+          <>
+            <ReportFilter onFilter={(filters) => console.log(filters)} />
+            <JournalList entries={journals} />
+            <button onClick={this.goToJournal} className="nav-btn">Back to Journal</button>
+          </>
+        )}
       </div>
     );
   }
