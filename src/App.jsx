@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { Component } from "react";
+import JournalForm from "./components/JournalForm";
+import ReportFilter from "./components/ReportFilter";
+import JournalList from "./components/JournalList";
+import "./styles.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+class App extends Component {
+  state = {
+    journals: [],
+  };
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+  // Add a new journal entry
+  addJournal = async (entry) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/journals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry),
+      });
+      const data = await response.json();
+      this.setState({ journals: [...this.state.journals, data] });
+    } catch (error) {
+      console.error("Error adding journal:", error);
+    }
+  };
+
+  // Fetch filtered journals
+  fetchReports = async (filters) => {
+    const query = new URLSearchParams(filters).toString();
+    const response = await fetch(`http://localhost:5000/api/journals?${query}`);
+    const data = await response.json();
+    this.setState({ journals: data });
+  };
+
+  render() {
+    return (
+      <div className="app-container">
+        <h1>📝 Daily Journal</h1>
+        <JournalForm onSubmit={this.addJournal} />
+        <ReportFilter onFilter={this.fetchReports} />
+        <JournalList entries={this.state.journals} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    );
+  }
 }
 
-export default App
+export default App;
