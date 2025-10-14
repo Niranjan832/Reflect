@@ -9,52 +9,30 @@ class ReportFilter extends Component {
 
   handleChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
-  handleMoodSelect = (selectedMood) => {
-    this.setState({ mood: selectedMood });
-  };
-
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.onFilter(this.state);
   };
 
   render() {
-    const moods = ["Happy", "Neutral", "Sad", "Angry", "Anxious"];
-    const { mood } = this.state;
-
     return (
-      <form className="filter-card" onSubmit={this.handleSubmit}>
+      <form className="filter-form" onSubmit={this.handleSubmit}>
         <h3>📊 Filter Reports</h3>
-        <div className="filter-inputs">
-          <input
-            type="date"
-            name="startDate"
-            onChange={this.handleChange}
-          />
-          <input
-            type="date"
-            name="endDate"
-            onChange={this.handleChange}
-          />
-        </div>
+        <div className="filters">
+          <input type="date" name="startDate" onChange={this.handleChange} />
+          <input type="date" name="endDate" onChange={this.handleChange} />
 
-        <div className="filter-moods">
-          <p>Select Mood:</p>
-          <div className="mood-buttons">
-            {moods.map((m) => (
-              <button
-                key={m}
-                type="button"
-                className={`mood-btn ${m.toLowerCase()} ${mood === m ? "selected" : ""}`}
-                onClick={() => this.handleMoodSelect(m)}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
+          <select name="mood" onChange={this.handleChange}>
+            <option value="">All Moods</option>
+            <option>Happy</option>
+            <option>Neutral</option>
+            <option>Sad</option>
+            <option>Angry</option>
+            <option>Anxious</option>
+          </select>
 
-        <button type="submit" className="apply-btn">Apply Filter</button>
+          <button type="submit">Apply Filter</button>
+        </div>
       </form>
     );
   }

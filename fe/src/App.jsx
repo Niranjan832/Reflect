@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import LoginPage from "./components/LoginPage"; // modern login/signup
+import LoginPage from "./components/LoginPage";
 import JournalForm from "./components/JournalForm";
 import ReportFilter from "./components/ReportFilter";
 import JournalList from "./components/JournalList";
@@ -12,25 +12,62 @@ class App extends Component {
     journals: [],
   };
 
+  // Fetch all journals when app loads
+  componentDidMount() {
+    this.fetchJournals();
+  }
+
+  fetchJournals = async () => {
+    if (!this.state.user) return;
+    try {
+      const res = await fetch("http://localhost:5000/api/journals");
+      const data = await res.json();
+      this.setState({ journals: data });
+    } catch (err) {
+      console.error("Error fetching journals:", err);
+    }
+  };
+
   // Handle login/signup
   handleLogin = (user) => {
-    this.setState({ user, page: "journal" });
+    this.setState({ user, page: "journal" }, this.fetchJournals);
   };
 
   // Add journal entry
-  addJournal = (entry) => {
-    this.setState({ journals: [...this.state.journals, entry] });
+  addJournal = async (entry) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/journals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry),
+      });
+      const savedEntry = await res.json();
+      this.setState({ journals: [savedEntry, ...this.state.journals] });
+    } catch (err) {
+      console.error("Error saving journal:", err);
+    }
   };
 
-  // Go to report page
-  goToReport = () => {
-    this.setState({ page: "report" });
+  // Filter journals
+  handleFilter = async (filters) => {
+    try {
+      let query = [];
+      if (filters.startDate) query.push(`startDate=${filters.startDate}`);
+      if (filters.endDate) query.push(`endDate=${filters.endDate}`);
+      if (filters.mood) query.push(`mood=${filters.mood}`);
+      const queryString = query.length ? "?" + query.join("&") : "";
+
+      const res = await fetch(`http://localhost:5000/api/journals${queryString}`);
+      const filtered = await res.json();
+      this.setState({ journals: filtered });
+    } catch (err) {
+      console.error("Error filtering journals:", err);
+    }
   };
 
-  // Go back to journal page
-  goToJournal = () => {
-    this.setState({ page: "journal" });
-  };
+  // Navigation
+  goToReport = () => this.setState({ page: "report" });
+  goToJournal = () => this.setState({ page: "journal" });
 
   render() {
     const { page, user, journals } = this.state;
@@ -45,15 +82,19 @@ class App extends Component {
           <>
             <p className="welcome-text">Welcome, {user.username}!</p>
             <JournalForm onSubmit={this.addJournal} />
-            <button onClick={this.goToReport} className="nav-btn">Go to Reports</button>
+            <button onClick={this.goToReport} className="nav-btn">
+              Go to Reports
+            </button>
           </>
         )}
 
         {page === "report" && user && (
           <>
-            <ReportFilter onFilter={(filters) => console.log("Filtered:", filters)} />
+            <ReportFilter onFilter={this.handleFilter} />
             <JournalList entries={journals} />
-            <button onClick={this.goToJournal} className="nav-btn">Back to Journal</button>
+            <button onClick={this.goToJournal} className="nav-btn">
+              Back to Journal
+            </button>
           </>
         )}
       </div>
