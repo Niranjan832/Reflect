@@ -1,0 +1,158 @@
+/* Premium Journal Dashboard - Modern UI */
+
+.journal-list {
+  margin-top: 30px;
+  text-align: center;
+  color: #fff;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.list-title {
+  font-size: 28px;
+  color: #ff7a00;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Controls section */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.controls input,
+.controls select {
+  background: #1c1c1c;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.controls input:focus,
+.controls select:focus {
+  border-color: #ff7a00;
+  box-shadow: 0 0 5px #ff7a00;
+}
+
+.no-entry {
+  color: #aaa;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.entries-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.journal-card {
+  background: #111;
+  border-radius: 16px;
+  box-shadow: 0 5px 18px rgba(255, 140, 0, 0.2);
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+  text-align: left;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  cursor: pointer;
+}
+
+.journal-card:hover {
+  transform: translateY(-3px);
+  border-left: 4px solid #ff7a00;
+  box-shadow: 0 8px 25px rgba(255, 140, 0, 0.25);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.entry-date {
+  font-size: 14px;
+  color: #aaa;
+  margin-right: 10px;
+}
+
+.entry-mood {
+  font-weight: 600;
+  font-size: 15px;
+  color: #ff7a00;
+}
+
+.entry-body {
+  font-size: 15px;
+  color: #ddd;
+  line-height: 1.5;
+  transition: 0.3s ease;
+}
+
+.expand-text {
+  color: #ff7a00;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.edit-btn:hover {
+  color: #ffa64d;
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  color: #ff4d4d;
+  transform: scale(1.1);
+}
+
+/* Mood-based coloring */
+.entry-mood.happy {
+  color: #ffd700;
+}
+.entry-mood.neutral {
+  color: #ccc;
+}
+.entry-mood.sad {
+  color: #6eb5ff;
+}
+.entry-mood.angry {
+  color: #ff4d4d;
+}
+.entry-mood.anxious {
+  color: #b26ef0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,67 +1,79 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import "./JournalForm.css";
 
-class JournalForm extends Component {
-  state = {
-    text: "",
-    mood: "Neutral",
-    charCount: 0,
+const JournalForm = ({ onSubmit }) => {
+  const [text, setText] = useState("");
+  const [mood, setMood] = useState("Neutral");
+  const [charCount, setCharCount] = useState(0);
+
+  const moods = [
+    { name: "Happy", icon: "😊" },
+    { name: "Neutral", icon: "😐" },
+    { name: "Sad", icon: "😢" },
+    { name: "Angry", icon: "😠" },
+    { name: "Anxious", icon: "😰" },
+  ];
+
+  const handleChange = (e) => {
+    setText(e.target.value);
+    setCharCount(e.target.value.length);
   };
 
-  handleChange = (e) => {
-    const { name, value } = e.target;
-    this.setState({ 
-      [name]: value,
-      charCount: name === "text" ? value.length : this.state.charCount
-    });
+  const handleMoodChange = (m) => {
+    setMood(m);
   };
 
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!this.state.text.trim()) return;
-    this.props.onSubmit({
-      text: this.state.text,
-      mood: this.state.mood,
+    if (!text.trim()) return;
+
+    onSubmit({
+      text,
+      mood,
       date: new Date(),
     });
-    this.setState({ text: "", mood: "Neutral", charCount: 0 });
+
+    setText("");
+    setMood("Neutral");
+    setCharCount(0);
   };
 
-  render() {
-    const moods = ["Happy", "Neutral", "Sad", "Angry", "Anxious"];
-    const { text, mood, charCount } = this.state;
+  return (
+    <form className="journal-form" onSubmit={handleSubmit}>
+      <h2 className="form-title">Write Your Thoughts</h2>
+      <textarea
+        name="text"
+        placeholder="How are you feeling today? Write freely..."
+        value={text}
+        onChange={handleChange}
+        required
+        maxLength={500}
+      ></textarea>
 
-    return (
-      <form className="journal-form" onSubmit={this.handleSubmit}>
-        <textarea
-          name="text"
-          placeholder="Write your thoughts..."
-          value={text}
-          onChange={this.handleChange}
-          required
-          maxLength={500}
-        ></textarea>
-        <div className="char-count">{charCount}/500</div>
+      <div className="char-count">{charCount}/500</div>
 
+      <div className="mood-section">
+        <p className="mood-label">Select your mood:</p>
         <div className="mood-options">
-          <p>Select your mood:</p>
           {moods.map((m) => (
-            <label key={m} className={`mood-label ${m.toLowerCase()}`}>
-              <input
-                type="radio"
-                name="mood"
-                value={m}
-                checked={mood === m}
-                onChange={this.handleChange}
-              />
-              {m}
-            </label>
+            <button
+              type="button"
+              key={m.name}
+              className={`mood-btn ${mood === m.name ? "selected" : ""}`}
+              onClick={() => handleMoodChange(m.name)}
+            >
+              <span className="mood-icon">{m.icon}</span>
+              <span>{m.name}</span>
+            </button>
           ))}
         </div>
+      </div>
 
-        <button type="submit" className="save-btn">Save Entry</button>
-      </form>
-    );
-  }
-}
+      <button type="submit" className="save-btn">
+        Save Entry
+      </button>
+    </form>
+  );
+};
 
 export default JournalForm;

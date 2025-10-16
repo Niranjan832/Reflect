@@ -1,34 +1,142 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import "./LoginPage.css";
 
-class LoginPage extends Component {
-  state = {
-    username: "",
-  };
+const LoginPage = ({ onLogin }) => {
+  const [isSignup, setIsSignup] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  handleChange = (e) => this.setState({ username: e.target.value });
-
-  handleSubmit = (e) => {
+  // ✅ Handle Login
+  const handleLogin = (e) => {
     e.preventDefault();
-    if (!this.state.username.trim()) return;
-    this.props.onLogin({ username: this.state.username });
+    const savedUser = JSON.parse(localStorage.getItem("reflectUser"));
+
+    if (!savedUser) {
+      alert("No user found. Please sign up first!");
+      return;
+    }
+
+    if (savedUser.username === username && savedUser.password === password) {
+      alert("Login Successful!");
+      if (onLogin) onLogin(savedUser);
+    } else {
+      alert("Invalid username or password!");
+    }
   };
 
-  render() {
-    return (
-      <form className="login-form" onSubmit={this.handleSubmit}>
-        <h2>Login / Signup</h2>
-        <input
-          type="text"
-          name="username"
-          placeholder="Enter username"
-          value={this.state.username}
-          onChange={this.handleChange}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-    );
-  }
-}
+  // ✅ Handle Signup
+  const handleSignup = (e) => {
+    e.preventDefault();
+
+    if (!username || !password || !confirmPassword) {
+      alert("Please fill all fields!");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    const newUser = { username, password };
+    localStorage.setItem("reflectUser", JSON.stringify(newUser));
+    alert("Signup Successful! Please login now.");
+    setIsSignup(false);
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
+  return (
+    <div className="login-container">
+      {/* Left Section */}
+      <div className="login-left">
+        <div className="brand-name">REFLECT</div>
+        <div className="welcome-section">
+          <h1>Welcome to Reflect</h1>
+          <p>“Your thoughts shape your tomorrow. Reflect today.”</p>
+        </div>
+      </div>
+
+      {/* Right Section */}
+      <div className="login-right">
+        <div className="login-box">
+          <h2>{isSignup ? "Sign Up" : "Login"}</h2>
+          <p className="login-subtitle">
+            {isSignup
+              ? "Create an account to start your journey."
+              : "Welcome back! Login to track your mental health."}
+          </p>
+
+          {/* Form */}
+          <form onSubmit={isSignup ? handleSignup : handleLogin}>
+            <input
+              type="text"
+              placeholder="User Name"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            {isSignup && (
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            )}
+
+            <button type="submit" className="login-btn">
+              {isSignup ? "SIGN UP" : "LOGIN"}
+            </button>
+          </form>
+
+          <div className="links">
+            {isSignup ? (
+              <p>
+                Already have an account?{" "}
+                <button
+                  className="toggle-btn"
+                  onClick={() => setIsSignup(false)}
+                >
+                  Login
+                </button>
+              </p>
+            ) : (
+              <p>
+                New User?{" "}
+                <button
+                  className="toggle-btn"
+                  onClick={() => setIsSignup(true)}
+                >
+                  Signup
+                </button>
+              </p>
+            )}
+          </div>
+        </div>
+
+        <footer className="login-footer">
+          ©{" "}
+          {new Date().toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })}{" "}
+          Reflect. All rights reserved.
+        </footer>
+      </div>
+    </div>
+  );
+};
 
 export default LoginPage;
